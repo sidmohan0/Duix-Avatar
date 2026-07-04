@@ -1,0 +1,56 @@
+# macOS (Apple Silicon / Intel) — CPU-only deployment.
+#
+# The upstream images are linux/amd64 CUDA builds. On macOS there is no NVIDIA
+# runtime, so this file runs them under emulation (use a VM with Rosetta, e.g.
+# Docker Desktop with "VirtioFS + Rosetta" or `colima start --vm-type=vz --vz-rosetta`)
+# and forces CPU inference. Expect generation to be much slower than on an
+# NVIDIA GPU — this is intended for development and evaluation, not production.
+#
+# Usage:
+#   docker compose -f docker-compose-mac.yml up -d
+networks:
+  ai_network:
+    driver: bridge
+
+services:
+  duix-avatar-tts:
+    image: guiji2025/fish-speech-ziming
+    platform: linux/amd64
+    container_name: duix-avatar-tts
+    restart: always
+    environment:
+      - CUDA_VISIBLE_DEVICES=
+    ports:
+      - '18180:8080'
+    volumes:
+      - ~/duix_avatar_data/voice/data:/code/data
+    command: /bin/bash -c "/opt/conda/envs/python310/bin/python3 tools/api_server.py --listen 0.0.0.0:8080 --device cpu"
+    networks:
+      - ai_network
+  # Optional: only needed for speech-recognition features. ~15 GB image.
+  # duix-avatar-asr:
+  #   image: guiji2025/fun-asr
+  #   platform: linux/amd64
+  #   container_name: duix-avatar-asr
+  #   restart: always
+  #   working_dir: /workspace/FunASR/runtime
+  #   ports:
+  #     - '10095:10095'
+  #   command: sh /run.sh
+  #   networks:
+  #     - ai_network
+  duix-avatar-gen-video:
+    image: guiji2025/duix.avatar
+    platform: linux/amd64
+    container_name: duix-avatar-gen-video
+    restart: always
+    volumes:
+      - ~/duix_avatar_data/face2face:/code/data
+    environment:
+      - CUDA_VISIBLE_DEVICES=
+    shm_size: '8g'
+    ports:
+      - '8383:8383'
+    command: python /code/app_local.py
+    networks:
+      - ai_network
