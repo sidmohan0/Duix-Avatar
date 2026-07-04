@@ -216,6 +216,25 @@ Reminder: In the Ubuntu system, if you enter the desktop as the `root` user, dir
 
 
 
+### Mode 3：macOS Installation
+
+The desktop client runs natively on macOS (Apple Silicon and Intel). The AI services can run locally in CPU mode (slow, for evaluation) or on a remote Linux machine with an NVIDIA GPU (recommended). See [doc/macos.md](doc/macos.md) for full instructions.
+
+```
+brew install ffmpeg
+npm install
+npm run dev
+
+# AI services, CPU mode (requires a Docker runtime with Rosetta, e.g. Colima or Docker Desktop)
+cd deploy
+docker compose -f docker-compose-mac.yml up -d
+
+# Or point the client at a remote GPU host
+DUIX_SERVICE_HOST=<gpu-host-ip> npm run dev
+```
+
+
+
 ## 4. Open APIs
 
 We have opened APIs for model training and video synthesis. After Docker starts, several ports will be exposed locally, accessible through `http://127.0.0.1`.
