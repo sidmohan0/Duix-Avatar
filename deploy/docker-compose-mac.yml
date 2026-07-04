@@ -27,18 +27,19 @@ services:
     command: /bin/bash -c "/opt/conda/envs/python310/bin/python3 tools/api_server.py --listen 0.0.0.0:8080 --device cpu"
     networks:
       - ai_network
-  # Optional: only needed for speech-recognition features. ~15 GB image.
-  # duix-avatar-asr:
-  #   image: guiji2025/fun-asr
-  #   platform: linux/amd64
-  #   container_name: duix-avatar-asr
-  #   restart: always
-  #   working_dir: /workspace/FunASR/runtime
-  #   ports:
-  #     - '10095:10095'
-  #   command: sh /run.sh
-  #   networks:
-  #     - ai_network
+  # Needed for voice cloning: the TTS service transcribes reference audio via
+  # ws://duix-avatar-asr:10095 during /v1/preprocess_and_tran.
+  duix-avatar-asr:
+    image: guiji2025/fun-asr
+    platform: linux/amd64
+    container_name: duix-avatar-asr
+    restart: always
+    working_dir: /workspace/FunASR/runtime
+    ports:
+      - '10095:10095'
+    command: sh /run.sh
+    networks:
+      - ai_network
   duix-avatar-gen-video:
     image: guiji2025/duix.avatar
     platform: linux/amd64
@@ -46,6 +47,8 @@ services:
     restart: always
     volumes:
       - ~/duix_avatar_data/face2face:/code/data
+      # Remaps hardcoded torch CUDA calls to CPU (auto-imported by Python).
+      - ./macos-cpu-shim/sitecustomize.py:/usr/local/python3/lib/python3.8/site-packages/sitecustomize.py:ro
     environment:
       - CUDA_VISIBLE_DEVICES=
     shm_size: '8g'

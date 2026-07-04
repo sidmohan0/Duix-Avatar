@@ -41,8 +41,23 @@ cd deploy
 docker compose -f docker-compose-mac.yml up -d
 ```
 
-Note: inference runs on CPU under amd64 emulation. Generating a video takes
-many times longer than on an NVIDIA GPU. Use short test clips.
+The upstream images hardcode CUDA calls (torch and onnxruntime, in compiled
+Cython modules), so `docker-compose-mac.yml` mounts
+`macos-cpu-shim/sitecustomize.py` into the video-generation container. Python
+auto-imports it at startup and it remaps CUDA calls to CPU. The TTS service
+supports `--device cpu` natively; the ASR service is required by the TTS
+service for voice cloning (it transcribes reference audio via
+`ws://duix-avatar-asr:10095`).
+
+Measured on an M-series Mac (Rosetta emulation, 10-core VM):
+
+| Task | Time |
+| --- | --- |
+| Video generation, 2s clip (1080x1920 source) | ~3 minutes |
+| TTS synthesis, one short sentence | ~4 minutes |
+
+This is roughly two orders of magnitude slower than an NVIDIA GPU — fine for
+development and evaluation, not for production use.
 
 ### Option B — remote NVIDIA GPU host (recommended)
 
