@@ -9,6 +9,7 @@ import { useHomeStore } from '@renderer/stores/home.js'
 import { useI18n } from 'vue-i18n'
 import { getContext, saveContext } from '@renderer/api/index.js'
 import { agreementKey, lang_ } from '@renderer/utils/const.js'
+import { defaultLanguage } from '@renderer/utils/language.js'
 
 const { locale } = useI18n()
 const unRoute = useRoute()
@@ -21,14 +22,9 @@ watch(
   }
 )
 onMounted(() => {
-  const language = localStorage.getItem('language')
-  if (language && language !== 'null') {
-    locale.value = language
-    home.setLanguage(language)
-  } else {
-    locale.value = 'zh'
-    home.setLanguage('zh')
-  }
+  const language = defaultLanguage()
+  locale.value = language
+  home.setLanguage(language)
   saveContextAjax(home.homeState.language)
   getContextAjax()
 })

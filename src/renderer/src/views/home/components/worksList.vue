@@ -86,7 +86,7 @@
                 <img src="../../../assets/images/home/icon-delete.svg" />
               </div>
               <div v-if="item.status === 'failed'" class="detection-failed-title">
-                {{ item.message }}
+                {{ localizeServiceMessage(item.message, t) }}
               </div>
               <div
                 v-if="
@@ -170,6 +170,7 @@ import zhConfig from 'tdesign-vue-next/es/locale/zh_CN'
 import { useI18n } from 'vue-i18n'
 const { locale, t } = useI18n()
 import { localUrl } from '@renderer/utils'
+import { localizeServiceMessage } from '@renderer/utils/service-message.js'
 
 import merge from 'lodash/merge'
 const globalEn = merge(enConfig, {

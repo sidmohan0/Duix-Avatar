@@ -1,12 +1,13 @@
 import { reactive } from 'vue'
 import { defineStore } from 'pinia'
+import { defaultLanguage } from '@renderer/utils/language.js'
 
 export const useHomeStore = defineStore('home', () => {
   const homeState = reactive({
     modelNum: 0,
     videoNum: 0,
     agreementVisible: false,
-    language: 'zh',
+    language: defaultLanguage(),
     isAgree: false
   })
   const setModelNum = (data) => {

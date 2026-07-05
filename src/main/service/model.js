@@ -4,6 +4,7 @@ import path from 'path'
 import dayjs from 'dayjs'
 import { isEmpty } from 'lodash'
 import { insert, selectPage, count, selectByID, remove as deleteModel } from '../dao/f2f-model.js'
+import { findByKey } from '../dao/context.js'
 import { train as trainVoice } from './voice.js'
 import { assetPath } from '../config/config.js'
 import log from '../logger.js'
@@ -39,12 +40,8 @@ async function addModel(modelName, videoPath) {
   return extractAudio(modelPath, audioPath).then(() => {
     // 训练语音模型
     const relativeAudioPath = path.relative(assetPath.ttsRoot, audioPath)
-    if (process.env.NODE_ENV === 'development') {
-      // TODO 写死调试
-      return trainVoice('origin_audio/test.wav', 'zh')
-    } else {
-      return trainVoice(relativeAudioPath, 'zh')
-    }
+    const lang = findByKey('lang')?.val || 'zh'
+    return trainVoice(relativeAudioPath, lang)
   }).then((voiceId)=>{
     // 插入模特信息
     const relativeModelPath = path.relative(assetPath.model, modelPath)

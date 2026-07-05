@@ -62,6 +62,17 @@ export const commonZh = {
     titleOk: '确认删除？',
     titleText: '删除后将无法恢复哦~'
   },
+  serviceMessage: {
+    submitting: '正在提交任务',
+    downloadDone: '文件下载完成',
+    videoFeatureDone: '视频特征提取完成',
+    taskDone: '任务完成',
+    systemError: '系统异常',
+    busy: '忙碌中',
+    paramError: '参数异常',
+    lockError: '获取锁异常',
+    taskNotFound: '任务不存在'
+  },
   message: {
     deleteErrorText: '删除失败',
     deleteSuccessText: '删除成功',
@@ -202,6 +213,17 @@ export const commonEn = {
     titleH1: 'Notice',
     titleOk: 'Confirm Delete?',
     titleText: 'It cannot be recovered after deletion~'
+  },
+  serviceMessage: {
+    submitting: 'Submitting task',
+    downloadDone: 'Files downloaded',
+    videoFeatureDone: 'Video features extracted',
+    taskDone: 'Task completed',
+    systemError: 'System error',
+    busy: 'Service busy',
+    paramError: 'Invalid parameters',
+    lockError: 'Failed to acquire task lock',
+    taskNotFound: 'Task not found'
   },
   message: {
     deleteErrorText: 'Failed',
