@@ -45,9 +45,13 @@ The upstream images hardcode CUDA calls (torch and onnxruntime, in compiled
 Cython modules), so `docker-compose-mac.yml` mounts
 `macos-cpu-shim/sitecustomize.py` into the video-generation container. Python
 auto-imports it at startup and it remaps CUDA calls to CPU. The TTS service
-supports `--device cpu` natively; the ASR service is required by the TTS
-service for voice cloning (it transcribes reference audio via
-`ws://duix-avatar-asr:10095`).
+supports `--device cpu` natively. For ASR (required by voice cloning: the TTS
+service transcribes reference audio via `ws://duix-avatar-asr:10095`), the
+`guiji2025/fun-asr` image ships a torch-blade recognizer that cannot load
+without CUDA, so the compose file substitutes the official FunASR CPU runtime
+image — same websocket protocol and port, ONNX builds of the same models
+(downloaded from ModelScope on first start, persisted in
+`~/duix_avatar_data/asr`).
 
 Measured on an M-series Mac (Rosetta emulation, 10-core VM):
 

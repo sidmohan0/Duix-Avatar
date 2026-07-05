@@ -29,40 +29,38 @@ services:
       - ai_network
   # Needed for voice cloning: the TTS service transcribes reference audio via
   # ws://duix-avatar-asr:10095 during /v1/preprocess_and_tran.
+  #
+  # guiji2025/fun-asr ships a torch-blade build of the recognizer that requires
+  # CUDA at model load, so on macOS the official FunASR CPU runtime is used
+  # instead. It serves the same websocket protocol on the same port with the
+  # onnx builds of the same models (downloaded from ModelScope on first start,
+  # ~1.5 GB, persisted in ~/duix_avatar_data/asr).
   duix-avatar-asr:
-    image: guiji2025/fun-asr
+    image: registry.cn-hangzhou.aliyuncs.com/funasr_repo/funasr:funasr-runtime-sdk-cpu-0.4.6
     platform: linux/amd64
     container_name: duix-avatar-asr
     restart: always
-    working_dir: /workspace/FunASR/runtime
     ports:
       - '10095:10095'
     volumes:
-      # Persists the CPU (onnx) ASR model across container recreations.
-      - ~/duix_avatar_data/asr:/workspace/models_local
-    # Two deviations from the stock /run.sh:
-    # - the server binary links libcuda.so.1; the image's compat driver library
-    #   satisfies the load without a GPU (registered via ldconfig because
-    #   run_server.sh unsets LD_LIBRARY_PATH)
-    # - the stock model-dir is the torch-blade build of paraformer, which
-    #   requires CUDA at load time; the onnx build of the same model runs on
-    #   CPU and is downloaded from ModelScope on first start (~1 GB, skipped
-    #   when already present)
+      - ~/duix_avatar_data/asr:/workspace/models
     command:
       - /bin/bash
       - -c
       - |
-        echo /usr/local/cuda-11.3/compat > /etc/ld.so.conf.d/cuda-compat.conf && ldconfig
-        python3 -c "from modelscope.hub.snapshot_download import snapshot_download; snapshot_download('damo/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-onnx', cache_dir='/workspace/models_local')"
         cd /workspace/FunASR/runtime
-        exec bash run_server.sh \
+        bash run_server.sh \
           --download-model-dir /workspace/models \
           --vad-dir damo/speech_fsmn_vad_zh-cn-16k-common-onnx \
-          --model-dir /workspace/models_local/damo/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-onnx \
+          --model-dir damo/speech_paraformer-large-vad-punc_asr_nat-zh-cn-16k-common-vocab8404-onnx \
           --punc-dir damo/punc_ct-transformer_cn-en-common-vocab471067-large-onnx \
           --lm-dir damo/speech_ngram_lm_zh-cn-ai-wesp-fst \
           --itn-dir thuduj12/fst_itn_zh \
           --certfile 0
+        # run_server.sh backgrounds the server and exits; keep PID 1 alive
+        # while the server runs so `restart: always` still catches crashes.
+        sleep 30
+        while pgrep -f funasr-wss-server > /dev/null; do sleep 10; done
     networks:
       - ai_network
   duix-avatar-gen-video:
