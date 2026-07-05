@@ -64,6 +64,7 @@ export const commonZh = {
   },
   serviceMessage: {
     submitting: '正在提交任务',
+    generatingSpeech: '正在生成语音',
     downloadDone: '文件下载完成',
     videoFeatureDone: '视频特征提取完成',
     taskDone: '任务完成',
@@ -216,6 +217,7 @@ export const commonEn = {
   },
   serviceMessage: {
     submitting: 'Submitting task',
+    generatingSpeech: 'Generating speech…',
     downloadDone: 'Files downloaded',
     videoFeatureDone: 'Video features extracted',
     taskDone: 'Task completed',

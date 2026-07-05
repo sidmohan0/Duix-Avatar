@@ -5,6 +5,7 @@
  */
 const SERVICE_MESSAGE_KEYS = {
   正在提交任务: 'submitting',
+  正在生成语音: 'generatingSpeech',
   文件下载完成: 'downloadDone',
   视频特征提取完成: 'videoFeatureDone',
   任务完成: 'taskDone',

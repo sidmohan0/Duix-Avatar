@@ -110,6 +110,7 @@ export async function synthesisVideo(videoId) {
       log.debug('~ makeVideo ~ voice:', voice)
 
       // 调用tts接口生成音频
+      update({ id: videoId, status: 'pending', message: '正在生成语音' })
       audioPath = await makeAudio4Video({
         voiceId: voice.id,
         text: video.text_content

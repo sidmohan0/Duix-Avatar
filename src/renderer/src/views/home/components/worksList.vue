@@ -103,7 +103,8 @@
           <div v-if="item.status === 'pending'" class="production comme">
             <div class="production-content">
               <img src="../../../assets/images/home/loading.svg" />
-              <div class="progress-text">{{ item.progress }}%</div>
+              <div v-if="item.progress > 0" class="progress-text">{{ item.progress }}%</div>
+              <div v-else class="progress-text">{{ localizeServiceMessage(item.message, t) }}</div>
               <div class="production-text">{{ $t('common.videoList.underProduction') }}</div>
             </div>
             <div class="delete-video" @click.native="delVideo(item.id)">
