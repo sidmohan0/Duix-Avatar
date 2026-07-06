@@ -1,5 +1,7 @@
 # Running Duix.Avatar on macOS
 
+![macOS architecture](macos-architecture.svg)
+
 Duix.Avatar's desktop client runs natively on macOS (Apple Silicon and Intel).
 The AI services (video generation, TTS) are Linux CUDA containers; on a Mac they
 can either run locally in CPU mode (slow, for development/evaluation) or on a
